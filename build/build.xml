@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="operpom" basedir="." default="build">
+
+    <tstamp/>
+
+    <property name="build.base.dir" value="release"/>
+    <property name="build.src.dir" value="${build.base.dir}/src"/>
+    <property name="build.coverage.dir" value="${build.base.dir}/coverage"/>
+    <property name="build.unit.dir" value="${build.base.dir}/unit"/>
+
+    <fileset dir="${build.src.dir}" id="php">
+        <include name="protected/models/**/*"/>
+        <include name="protected/modules/**/models/*"/>
+    </fileset>
+
+    <fileset dir="${build.src.dir}/protected/tests/unit" id="tests">
+        <include name="**/*Test.php"/>
+    </fileset>
+
+    <!--Source files-->
+    <fileset dir="." id="sources">
+        <exclude name="public/assets/"/>
+        <exclude name="protected/runtime/"/>
+        <include name="framework/**/*"/>
+        <include name="protected/**/*"/>
+        <include name="public/**/*"/>
+        <include name="BUILD_ID"/>
+    </fileset>
+
+    <!-- ****************************** -->
+    <!-- **         GENERAL          ** -->
+    <!-- ****************************** -->
+
+    <target name="clean" description="Clearing build...">
+        <delete dir="${build.src.dir}" includeemptydirs="true" failonerror="true"/>
+        <delete dir="${build.coverage.dir}" includeemptydirs="true" failonerror="true"/>
+        <delete dir="${build.unit.dir}" includeemptydirs="true" failonerror="true"/>
+    </target>
+
+    <target name="prepare" depends="clean">
+        <echo>Preparing build...</echo>
+        <mkdir dir="${build.src.dir}" mode="0755"/>
+        <mkdir dir="${build.coverage.dir}" mode="0755"/>
+        <mkdir dir="${build.unit.dir}" mode="0755"/>
+    </target>
+
+    <target name="copy">
+        <echo>Copying sources to build directory...</echo>
+        <copy todir="${build.src.dir}" overwrite="true" haltonerror="true" verbose="false">
+            <fileset refid="sources"/>
+        </copy>
+    </target>
+
+    <target name="configure" description="Configuratin application">
+
+        <!--Configurating application-->
+        <echo>Copy config/source/main.php to config/main.php</echo>
+        <copy file="${build.src.dir}/protected/config/source/main.php"
+              tofile="${build.src.dir}/protected/config/main.php" overwrite="true">
+            <filterchain id="filter.database">
+                <replacetokens begintoken="[[" endtoken="]]">
+                    <token key="database.type" value="${database.type}"/>
+                    <token key="database.host" value="${database.host}"/>
+                    <token key="database.basename" value="${database.basename}"/>
+                    <token key="database.username" value="${database.username}"/>
+                    <token key="database.password" value="${database.password}"/>
+                    <token key="database.charset" value="${database.charset}"/>
+                    <token key="database.tablePrefix" value="${database.tablePrefix}"/>
+                    <token key="database.schemaCachingDuration" value="${database.schemaCachingDuration}"/>
+                    <token key="database.queryCachingDuration" value="${database.queryCachingDuration}"/>
+                    <token key="database.enableParamLogging" value="${database.enableParamLogging}"/>
+                    <token key="database.enableProfiling" value="${database.enableProfiling}"/>
+                    <token key="database.emulatePrepare" value="${database.emulatePrepare}"/>
+
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <echo>Copy config/source/console.php to config/console.php</echo>
+        <copy file="${build.src.dir}/protected/config/source/console.php"
+              tofile="${build.src.dir}/protected/config/console.php" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="[[" endtoken="]]">
+                    <token key="database.type" value="${database.type}"/>
+                    <token key="database.host" value="${database.console.host}"/>
+                    <token key="database.basename" value="${database.console.basename}"/>
+                    <token key="database.username" value="${database.console.username}"/>
+                    <token key="database.password" value="${database.console.password}"/>
+                    <token key="database.charset" value="${database.charset}"/>
+                    <token key="database.tablePrefix" value="${database.tablePrefix}"/>
+                    <token key="database.schemaCachingDuration" value="${database.schemaCachingDuration}"/>
+                    <token key="database.queryCachingDuration" value="${database.queryCachingDuration}"/>
+                    <token key="database.enableParamLogging" value="${database.enableParamLogging}"/>
+                    <token key="database.enableProfiling" value="${database.enableProfiling}"/>
+                    <token key="database.emulatePrepare" value="${database.emulatePrepare}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <echo>Copy config/source/test.php to config/test.php</echo>
+        <copy file="${build.src.dir}/protected/config/source/test.php"
+              tofile="${build.src.dir}/protected/config/test.php" overwrite="true">
+            <filterchain>
+                <replacetokens begintoken="[[" endtoken="]]">
+                    <token key="database.type" value="${database.type}"/>
+                    <token key="database.host" value="${database.host}"/>
+                    <token key="database.basename" value="${database.basename}_test"/>
+                    <token key="database.username" value="${database.username}"/>
+                    <token key="database.password" value="${database.password}"/>
+                    <token key="database.charset" value="${database.charset}"/>
+                    <token key="database.tablePrefix" value="${database.tablePrefix}"/>
+                    <token key="database.schemaCachingDuration" value="${database.schemaCachingDuration}"/>
+                    <token key="database.queryCachingDuration" value="${database.queryCachingDuration}"/>
+                    <token key="database.enableParamLogging" value="${database.enableParamLogging}"/>
+                    <token key="database.enableProfiling" value="${database.enableProfiling}"/>
+                    <token key="database.emulatePrepare" value="${database.emulatePrepare}"/>
+                </replacetokens>
+            </filterchain>
+        </copy>
+
+        <!--Clearing source path-->
+        <delete dir="${build.src.dir}/protected/config/source" description="Remove source directories"/>
+    </target>
+
+    <target name="test">
+
+        <echo>Testing</echo>
+
+        <exec command="/usr/bin/php ${build.src.dir}/protected/yiit migrate --interactive=0"
+              outputProperty="migrateLog" returnProperty="migrateReturn"/>
+        <echo message="${migrateLog}"/>
+        <if>
+            <equals arg1="${migrateReturn}" arg2="1"/>
+            <then>
+                <fail message="Migrating test database failed"/>
+            </then>
+        </if>
+
+        <mkdir dir="${build.coverage.dir}" mode="0755"/>
+        <mkdir dir="${build.unit.dir}" mode="0755"/>
+
+        <coverage-setup database="${build.coverage.dir}/coverage.db">
+            <fileset refid="php"/>
+        </coverage-setup>
+
+        <phpunit codecoverage="true" haltonerror="true" haltonfailure="true"
+                 bootstrap="${build.src.dir}/protected/tests/bootstrap.php">
+            <formatter type="xml" todir="${build.unit.dir}" outfile="phpunit.xml"/>
+            <batchtest>
+                <fileset refid="tests"/>
+            </batchtest>
+        </phpunit>
+
+        <phpunitreport infile="${build.unit.dir}/phpunit.xml"
+                       format="noframes"
+                       todir="${build.unit.dir}"/>
+
+        <coverage-report outfile="${build.coverage.dir}/coverage.xml">
+            <report toDir="${build.coverage.dir}"
+                    styleDir="${coverage.styleDir}"/>
+        </coverage-report>
+    </target>
+
+    <target name="build" depends="prepare,copy,configure"/>
+</project>

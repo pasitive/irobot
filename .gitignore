@@ -1,0 +1,7 @@
+.idea
+public/config/*
+!public/config/main.php
+public/uploads/*
+public/packages/*
+public/assets/*
+protected/runtime/*

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="irobot" basedir="." default="main">
+
+    <property name="deploy.host" value=""/>
+    <property name="deploy.port" value=""/>
+    <property name="deploy.user" value=""/>
+    <property name="deploy.password" value=""/>
+    <property name="deploy.path" value=""/>
+
+    <target name="main">
+        <foreach list="${deploy.host}" param="current.deploy.host" target="setup"/>
+    </target>
+
+    <target name="setup">
+        <ssh pubkeyfile="/Users/denisboldinov/Dropbox/etc/ssh.d/id_rsa.pub"
+             privkeyfile="/Users/denisboldinov/Dropbox/etc/ssh.d/id_rsa"
+             username="deployer"
+             host="${current.deploy.host}"
+             port="${deploy.port}"
+             command="
+             mkdir -p ${deploy.path}/shared/assets -m 0777 &amp;&amp;
+             mkdir -p ${deploy.path}/shared/runtime -m 0777 &amp;&amp;
+             mkdir -p ${deploy.path}/shared/upload -m 0777 &amp;&amp;
+             mkdir -p ${deploy.path}/releases -m 0755 &amp;&amp;
+             "/>
+    </target>
+</project>
