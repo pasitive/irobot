@@ -38,10 +38,10 @@
              display="true"/>
 
         <ssh description="Removing upload link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
-             command="rm -rf ${deploy.path}/releases/${revision}/public/upload"
+             command="rm -rf ${deploy.path}/releases/${revision}/public/uploads"
              display="true"/>
         <ssh description="Linking upload" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
-             command="ln -s ${deploy.path}/shared/upload ${deploy.path}/releases/${revision}/public/upload"
+             command="ln -s ${deploy.path}/shared/uploads ${deploy.path}/releases/${revision}/public/uploads"
              display="true"/>
 
         <ssh description="Removing assets link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"

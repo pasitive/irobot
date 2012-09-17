@@ -82,10 +82,10 @@
             <filterchain>
                 <replacetokens begintoken="[[" endtoken="]]">
                     <token key="database.type" value="${database.type}"/>
-                    <token key="database.host" value="${database.console.host}"/>
-                    <token key="database.basename" value="${database.console.basename}"/>
-                    <token key="database.username" value="${database.console.username}"/>
-                    <token key="database.password" value="${database.console.password}"/>
+                    <token key="database.console.host" value="${database.console.host}"/>
+                    <token key="database.console.basename" value="${database.console.basename}"/>
+                    <token key="database.console.username" value="${database.console.username}"/>
+                    <token key="database.console.password" value="${database.console.password}"/>
                     <token key="database.charset" value="${database.charset}"/>
                     <token key="database.tablePrefix" value="${database.tablePrefix}"/>
                     <token key="database.schemaCachingDuration" value="${database.schemaCachingDuration}"/>

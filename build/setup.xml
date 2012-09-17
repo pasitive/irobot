@@ -20,7 +20,7 @@
              command="
              mkdir -p ${deploy.path}/shared/assets -m 0777 &amp;&amp;
              mkdir -p ${deploy.path}/shared/runtime -m 0777 &amp;&amp;
-             mkdir -p ${deploy.path}/shared/upload -m 0777 &amp;&amp;
+             mkdir -p ${deploy.path}/shared/uploads -m 0777 &amp;&amp;
              mkdir -p ${deploy.path}/releases -m 0755 &amp;&amp;
              "/>
     </target>

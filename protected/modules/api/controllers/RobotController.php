@@ -79,9 +79,19 @@ class RobotController extends Controller
         $local = $rootDir . DIRECTORY_SEPARATOR . $model->getFilePath(true);
         $zip->addFile($file, $local);
 
-        $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $model->getTextureFile();
-        $local = $rootDir . DIRECTORY_SEPARATOR . $model->getTextureFile(true, true);
-        $zip->addFile($file, $local);
+        if (!is_array(CJSON::decode($model->texture_file))) {
+            $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $model->getTextureFileByName($model->texture_file);
+            $local = $rootDir . DIRECTORY_SEPARATOR . $model->getTextureFileByName($model->texture_file, true, true);
+            $zip->addFile($file, $local);
+        } else {
+            $textures = CJSON::decode($model->texture_file);
+            foreach ($textures as $texture) {
+                $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture);
+                $local = $rootDir . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture, true, true);
+                $zip->addFile($file, $local);
+            }
+        }
+
 
         //Photos
         $photoDir = 'Photo';
@@ -201,7 +211,7 @@ class RobotController extends Controller
      * @param null $xml
      * @return null|Xml
      */
-    protected function getXmlForRobotId($model, $xml)
+    protected function getXmlForRobotId($model, DOMDocument $xml)
     {
         assert($model !== null);
 
@@ -217,7 +227,21 @@ class RobotController extends Controller
         $robot->appendChild($xml->createElement('MainFile', $model->getFilePath(true)));
         $robot->appendChild($xml->createElement('PanelColor', ''));
         $robot->appendChild($xml->createElement('LinkUrl', $model->link_url));
-        $robot->appendChild($xml->createElement('TextureFile', $model->getTextureFile(true, true)));
+
+        $textureNode = $xml->createElement('TextureFile');
+
+        if (!is_array(CJSON::decode($model->texture_file))) {
+            $textureNode->nodeValue = $model->getTextureFileByName($model->texture_file, true, true);
+        } else {
+            $textures = CJSON::decode($model->texture_file);
+            foreach ($textures as $texture) {
+                $textureNodeChild = $xml->createElement('Texture', $model->getTextureFileByName($texture, true, true));
+                $textureNode->appendChild($textureNodeChild);
+            }
+        }
+
+        $robot->appendChild($textureNode);
+
         $robot->appendChild($xml->createElement('CleaningText', 'CleaningText.html'));
 
         $equipments = $xml->createElement('Equipments');
@@ -292,11 +316,21 @@ class RobotController extends Controller
             'description' => $model->description,
             'preview' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(200),
             'image' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(0),
-            'mainFile' => $model->getFilePath(),
+            'mainFile' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePath(),
+            'mainFilePod' => '',
             'linkUrl' => $model->link_url,
-            'textureFile' => $model->getTextureFile(false, true),
         );
 
+        if (!is_array(CJSON::decode($model->texture_file))) {
+            $texture = Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getTextureFileByName($model->texture_file, false, true);
+            $response['texture'] = array($texture);
+        } else {
+            $buf = CJSON::decode($model->texture_file);
+            foreach($buf as $texture) {
+                $textures[] = Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture, false, true);
+            }
+            $response['texture'] = $textures;
+        }
 
         $response['equipment'] = array();
         $modelEquipment = !empty($model->robotEquipments) ? $model->robotEquipments : array();
@@ -325,7 +359,7 @@ class RobotController extends Controller
 
         $response['photo'] = array();
         $modelPhotos = !empty($model->robotPhotos) ? $model->robotPhotos : array();
-        foreach ($modelPhotos as $idnex => $photoItem) {
+        foreach ($modelPhotos as $index => $photoItem) {
             $response['photo'][] = array(
                 'updateAt' => date_format(date_create($featureItem->updated_at), DATE_RFC822),
                 'preview50' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $photoItem->getImage(50),

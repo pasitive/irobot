@@ -17,6 +17,7 @@
  * @property string $texture_file
  * @property string $texture_name
  * @property string $cleaning_text
+ * @property string $file_path_pod
  *
  * The followings are the available model relations:
  * @property RobotEquipment[] $robotEquipments
@@ -27,6 +28,8 @@ class Robot extends CActiveRecord
     public $newFilePath;
     public $newImage;
     public $newTextureFile;
+    public $newFilePathPod;
+
 
     public $imageSize = array(100, 200, 1024);
 
@@ -46,13 +49,14 @@ class Robot extends CActiveRecord
         return $this->getResourcePath($this->file_path, 0, array('onlyFileName' => $onlyFileName));
     }
 
-    public function getTextureFile($onlyFileName = false, $stripHashName = false)
+    public function getTextureFileByName($name, $onlyFileName = false, $stripHashName = false)
     {
-        return $this->getResourcePath($this->texture_file, 0, array(
-                                                                   'onlyFileName' => $onlyFileName,
-                                                                   'stripHashName' => $stripHashName,
-                                                              ));
+        return $this->getResourcePath($name, 0, array(
+            'onlyFileName' => $onlyFileName,
+            'stripHashName' => $stripHashName,
+        ));
     }
+
 
     /**
      * Returns the static model of the specified AR class.
@@ -82,11 +86,12 @@ class Robot extends CActiveRecord
             array('name, description, price, cleaning_text', 'required'),
             array('name, file_path, screen_name, link_url', 'length', 'max' => 255),
             array('price', 'length', 'max' => 10),
-            array('created_at, updated_at, newFilePath, newImage, newTextureFile', 'safe'),
+            array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file', 'safe'),
             array('link_url', 'url'),
             array('file_path', 'file', 'allowEmpty' => false, 'types' => '3ds', 'on' => 'insert'),
+            array('file_path_pod', 'file', 'allowEmpty' => false, 'types' => 'pod', 'on' => 'insert'),
             array('image', 'file', 'allowEmpty' => false, 'types' => 'jpg,jpeg,gif,png', 'on' => 'insert'),
-            array('texture_file', 'file', 'allowEmpty' => false, 'types' => 'jpg,jpeg,gif,png', 'on' => 'insert'),
+//            array('texture_file', 'file', 'allowEmpty' => false, 'types' => 'jpg,jpeg,gif,png', 'on' => 'insert'),
 
             array('id, name, description, price, file_path, created_at, updated_at', 'safe', 'on' => 'search'),
         );
@@ -161,9 +166,35 @@ class Robot extends CActiveRecord
         if ($file !== null) {
             $fileName = Common::processFile($this, $file, $hashString);
             $this->updateByPk($this->id, array(
-                                              'file_path' => $fileName,
-                                         ));
+                'file_path' => $fileName,
+            ));
             $this->setAttribute('file_path', $fileName);
+        }
+
+//        $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
+//        $file = CUploadedFile::getInstance($this, $attribute);
+
+        $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
+        $files = CUploadedFile::getInstances($this, $attribute);
+
+        if (!empty($files)) {
+
+            $hashString = $this->generatePathHash();
+
+            $texture = array();
+            foreach ($files as $file) {
+                if ($file !== null) {
+                    $fileName = Common::processFile($this, $file, $hashString, true);
+                    $texture[] = $fileName;
+                }
+            }
+            $this->updateByPk($this->id, array(
+                'texture_file' => CJSON::encode($texture),
+            ));
+            $this->setAttributes(array(
+                'texture_file' => CJSON::encode($texture),
+            ));
+
         }
 
         $attribute = $this->isNewRecord ? 'image' : 'newImage';
@@ -174,24 +205,11 @@ class Robot extends CActiveRecord
                 Common::processImage($this, $image, $imageSize, $hashString);
             }
             $this->updateByPk($this->id, array(
-                                              'image' => $imageMeta['fileName'],
-                                         ));
+                'image' => $imageMeta['fileName'],
+            ));
             $this->setAttributes(array(
-                                      'image' => $imageMeta['fileName'],
-                                 ));
-        }
-
-        $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
-        $file = CUploadedFile::getInstance($this, $attribute);
-
-        if ($file !== null) {
-            $fileName = Common::processFile($this, $file, $hashString, true);
-            $this->updateByPk($this->id, array(
-                                              'texture_file' => $fileName,
-                                         ));
-            $this->setAttributes(array(
-                                      'texture_file' => $fileName,
-                                 ));
+                'image' => $imageMeta['fileName'],
+            ));
         }
 
         parent::afterSave();
@@ -225,10 +243,10 @@ class Robot extends CActiveRecord
         $criteria->compare('screen_name', $this->screen_name, true);
 
         return new CActiveDataProvider($this, array(
-                                                   'criteria' => $criteria,
-                                                   'pagination' => array(
-                                                       'pageSize' => 999,
-                                                   ),
-                                              ));
+            'criteria' => $criteria,
+            'pagination' => array(
+                'pageSize' => 999,
+            ),
+        ));
     }
 }

@@ -23,6 +23,10 @@ return array(
 
     'modules' => array(
         'api',
+        'gii' => array(
+            'class' => 'system.gii.GiiModule',
+            'password' => 'qqq',
+        ),
     ),
 
     // application components

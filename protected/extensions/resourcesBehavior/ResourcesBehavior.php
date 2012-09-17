@@ -84,17 +84,13 @@ class ResourcesBehavior extends CActiveRecordBehavior
         $basePath = Yii::app()->getAssetManager()->publish(Yii::getPathOfAlias('ext.resourcesBehavior.assets'), false, -1, YII_DEBUG);
         $noResourceImage = $basePath . DIRECTORY_SEPARATOR . 'no_resource.png';
 
-
         $resourceName = $name;
+
         if ($size !== 0) {
             $resourceName = str_replace('.', '_' . $size . '.', $name);
         }
 
         $pathHash = $this->getPathHash($resourceName);
-
-        $resourcePath = $this->getRelativeResourcePath() . DIRECTORY_SEPARATOR .
-                        $pathHash . DIRECTORY_SEPARATOR .
-                        $resourceName;
 
         $absoluteResourcePath = $this->getAbsoluteResourcePath() . DIRECTORY_SEPARATOR .
                                 $pathHash . DIRECTORY_SEPARATOR .
@@ -104,16 +100,20 @@ class ResourcesBehavior extends CActiveRecordBehavior
             return $noResourceImage;
         }
 
+        if(isset($options['stripHashName']) && $options['stripHashName'] === true) {
+            $resourceName = substr($resourceName, 6);
+        }
+
+        $resourcePath = $this->getRelativeResourcePath() . DIRECTORY_SEPARATOR .
+            $pathHash . DIRECTORY_SEPARATOR .
+            $resourceName;
+
         // Options
 
         $result = $resourcePath;
 
         if(isset($options['onlyFileName']) && $options['onlyFileName'] === true) {
             $result = $resourceName;
-        }
-
-        if(isset($options['stripHashName']) && $options['stripHashName'] === true) {
-            $result = substr($resourceName, 6);
         }
 
         return $result;

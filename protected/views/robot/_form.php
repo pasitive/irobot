@@ -27,11 +27,11 @@
     <div class="row">
         <?php echo $form->labelEx($model, 'description'); ?>
         <?php $this->widget('application.extensions.tinymce.TinyMce',
-                            array(
-                                 'htmlOptions' => array('cols' => 50, 'rows' => 6),
-                                 'model' => $model,
-                                 'attribute' => 'description',
-                            ));
+        array(
+            'htmlOptions' => array('cols' => 50, 'rows' => 6),
+            'model' => $model,
+            'attribute' => 'description',
+        ));
         ?>
         <?php echo $form->error($model, 'description'); ?>
     </div>
@@ -39,11 +39,11 @@
     <div class="row">
         <?php echo $form->labelEx($model, 'cleaning_text'); ?>
         <?php $this->widget('application.extensions.tinymce.TinyMce',
-                            array(
-                                 'htmlOptions' => array('cols' => 50, 'rows' => 6),
-                                 'model' => $model,
-                                 'attribute' => 'cleaning_text',
-                            ));
+        array(
+            'htmlOptions' => array('cols' => 50, 'rows' => 6),
+            'model' => $model,
+            'attribute' => 'cleaning_text',
+        ));
         ?>
         <?php echo $form->error($model, 'cleaning_text'); ?>
     </div>
@@ -64,7 +64,11 @@
 
     <div class="row">
         <?php echo $form->labelEx($model, 'texture_file'); ?>
-        <?php echo CHtml::activeFileField($model, 'texture_file'); ?>
+        <?php $this->widget('CMultiFileUpload', array(
+        'model' => $model,
+        'attribute' => 'texture_file',
+        'accept' => 'jpg|gif|png',
+    )); ?>
         <?php echo $form->error($model, 'texture_file'); ?>
     </div>
 
@@ -78,8 +82,8 @@
 
     <div class="row">
         <?php echo $form->labelEx($model, 'file_path'); ?>
-        <?php if(!empty($model->file_path)): ?>
-            <?php echo $model->getFilePath(); ?>
+        <?php if (!empty($model->file_path)): ?>
+        <?php echo $model->getFilePath(); ?>
         <?php endif; ?>
     </div>
 
@@ -89,26 +93,44 @@
         <?php echo $form->error($model, 'newFilePath'); ?>
     </div>
 
-    <hr />
+    <hr/>
 
     <h2>Текстура</h2>
 
-    <?php if(!empty($model->texture_file)): ?>
-        <?php echo CHtml::image($model->getTextureFile(), '', array('width' => 150)); ?>
-    <?php endif; ?>
+    <?php if (!empty($model->texture_file)): ?>
+        <?php
+        if (!is_array(CJSON::decode($model->texture_file))) {
+            echo CHtml::image($model->getTextureFileByName($model->texture_file), '', array('width' => 150));
+        } else {
+            $textures = CJSON::decode($model->texture_file);
+            echo '<table><tr>';
+            foreach ($textures as $texture) {
+                echo '<td>'.CHtml::image($model->getTextureFileByName($texture), '', array('width' => 150)) . '</td>';
+            }
+            echo '</tr></table>';
+        }
+        ?>
+
+
+
+        <?php endif; ?>
     <div class="row">
         <?php echo $form->labelEx($model, 'newTextureFile'); ?>
-        <?php echo CHtml::activeFileField($model, 'newTextureFile'); ?>
+        <?php $this->widget('CMultiFileUpload', array(
+        'model' => $model,
+        'attribute' => 'newTextureFile',
+        'accept' => 'jpg|gif|png',
+    )); ?>
         <?php echo $form->error($model, 'newTextureFile'); ?>
     </div>
 
-    <hr />
+    <hr/>
 
     <h2>Изображение</h2>
 
-    <?php if(!empty($model->image)): ?>
+    <?php if (!empty($model->image)): ?>
         <?php echo CHtml::image($model->getImage(200)); ?>
-    <?php endif; ?>
+        <?php endif; ?>
     <div class="row">
         <?php echo $form->labelEx($model, 'newImage'); ?>
         <?php echo CHtml::activeFileField($model, 'newImage'); ?>
