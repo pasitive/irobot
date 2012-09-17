@@ -49,6 +49,13 @@ class Robot extends CActiveRecord
         return $this->getResourcePath($this->file_path, 0, array('onlyFileName' => $onlyFileName));
     }
 
+    public function getFilePathPod($onlyFileName = false)
+    {
+        return $this->getResourcePath($this->file_path_pod, 0, array('onlyFileName' => $onlyFileName));
+    }
+
+
+
     public function getTextureFileByName($name, $onlyFileName = false, $stripHashName = false)
     {
         return $this->getResourcePath($name, 0, array(
@@ -122,16 +129,18 @@ class Robot extends CActiveRecord
             'name' => 'Название',
             'description' => 'Описание',
             'price' => 'Цена',
-            'file_path' => 'Файл 3D модели',
-            'newFilePath' => 'Новый файл 3D модели',
+            'file_path' => 'Файл 3DS модели',
+            'file_path_pod' => 'Файл POD модели',
+            'newFilePath' => 'Новый файл 3DS модели',
+            'newFilePathPod' => 'Новый файл POD модели',
             'newImage' => 'Новое изображение',
             'created_at' => 'Создано',
             'updated_at' => 'Обновлено',
             'image' => 'Изображение',
             'link_url' => 'Ссылка',
             'screen_name' => 'Экранное название',
-            'texture_file' => 'Файл текстуры модели',
-            'newTextureFile' => 'Новый файл текстуры модели',
+            'texture_file' => 'Файлы текстур модели',
+            'newTextureFile' => 'Новые файлы текстур модели',
             'texture_name' => 'Оригинальное имя файла текстуры',
             'cleaning_text' => 'Технология уборки',
         );
@@ -171,16 +180,25 @@ class Robot extends CActiveRecord
             $this->setAttribute('file_path', $fileName);
         }
 
-//        $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
-//        $file = CUploadedFile::getInstance($this, $attribute);
+
+        $attribute = $this->isNewRecord ? 'file_path_pod' : 'newFilePathPod';
+        $file = CUploadedFile::getInstance($this, $attribute);
+
+        $hashString = $this->generatePathHash();
+
+        if ($file !== null) {
+            $fileName = Common::processFile($this, $file, $hashString);
+            $this->updateByPk($this->id, array(
+                'file_path_pod' => $fileName,
+            ));
+            $this->setAttribute('file_path_pod', $fileName);
+        }
 
         $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
         $files = CUploadedFile::getInstances($this, $attribute);
 
         if (!empty($files)) {
-
             $hashString = $this->generatePathHash();
-
             $texture = array();
             foreach ($files as $file) {
                 if ($file !== null) {

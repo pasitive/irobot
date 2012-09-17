@@ -63,6 +63,12 @@
     </div>
 
     <div class="row">
+        <?php echo $form->labelEx($model, 'file_path_pod'); ?>
+        <?php echo CHtml::activeFileField($model, 'file_path_pod'); ?>
+        <?php echo $form->error($model, 'file_path_pod'); ?>
+    </div>
+
+    <div class="row">
         <?php echo $form->labelEx($model, 'texture_file'); ?>
         <?php $this->widget('CMultiFileUpload', array(
         'model' => $model,
@@ -93,6 +99,19 @@
         <?php echo $form->error($model, 'newFilePath'); ?>
     </div>
 
+    <div class="row">
+        <?php echo $form->labelEx($model, 'file_path_pod'); ?>
+        <?php if (!empty($model->file_path_pod)): ?>
+        <?php echo $model->getFilePathPod(); ?>
+        <?php endif; ?>
+    </div>
+
+    <div class="row">
+        <?php echo $form->labelEx($model, 'newFilePathPod'); ?>
+        <?php echo CHtml::activeFileField($model, 'newFilePathPod'); ?>
+        <?php echo $form->error($model, 'newFilePathPod'); ?>
+    </div>
+
     <hr/>
 
     <h2>Текстура</h2>
@@ -110,8 +129,6 @@
             echo '</tr></table>';
         }
         ?>
-
-
 
         <?php endif; ?>
     <div class="row">

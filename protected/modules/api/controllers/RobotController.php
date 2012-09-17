@@ -317,7 +317,7 @@ class RobotController extends Controller
             'preview' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(200),
             'image' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(0),
             'mainFile' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePath(),
-            'mainFilePod' => '',
+            'mainFilePod' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePathPod(),
             'linkUrl' => $model->link_url,
         );
 
