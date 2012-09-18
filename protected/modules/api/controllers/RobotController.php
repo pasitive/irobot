@@ -97,7 +97,6 @@ class RobotController extends Controller
         $zip->addEmptyDir($rootDir . DIRECTORY_SEPARATOR . $photoDir);
 
         $robotPhotos = !empty($model->robotPhotos) ? $model->robotPhotos : array();
-
         foreach ($robotPhotos as $photo) {
             $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $photo->getImage(50);
             $local = $rootDir . DIRECTORY_SEPARATOR . $photoDir . DIRECTORY_SEPARATOR . $photo->getImage(50, true);
@@ -110,6 +109,16 @@ class RobotController extends Controller
             $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $photo->getImage(0);
             $local = $rootDir . DIRECTORY_SEPARATOR . $photoDir . DIRECTORY_SEPARATOR . $photo->getImage(0, true);
             $zip->addFile($file, $local);
+        }
+
+        //Equipment images
+        $modelEquipment = !empty($model->robotEquipments) ? $model->robotEquipments : array();
+        foreach ($modelEquipment as $index => $equipmentItem) {
+            if (intval($equipmentItem->value) !== 0) {
+                $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $equipmentItem->equipment->getImage(0);
+                $local = $rootDir . DIRECTORY_SEPARATOR . $equipmentItem->equipment->getImage(0, true);
+                $zip->addFile($file, $local);
+            }
         }
 
         $zip->addFromString($rootDir . DIRECTORY_SEPARATOR . 'Info.xml', $xml->saveXML());
