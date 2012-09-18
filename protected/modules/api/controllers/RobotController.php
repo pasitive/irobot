@@ -86,7 +86,7 @@ class RobotController extends Controller
         } else {
             $textures = CJSON::decode($model->texture_file);
             foreach ($textures as $texture) {
-                $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture);
+                $file = Yii::getPathOfAlias('webroot') . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture, false, true);
                 $local = $rootDir . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture, true, true);
                 $zip->addFile($file, $local);
             }
