@@ -80,7 +80,7 @@ return array(
             'enableProfiling' => '[[database.enableProfiling]]',
         ),
         'cache' => array(
-            'class' => 'CFileCache',
+            'class' => 'CDummyCache',
         ),
     ),
 

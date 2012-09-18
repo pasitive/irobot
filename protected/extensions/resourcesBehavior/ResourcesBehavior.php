@@ -92,16 +92,16 @@ class ResourcesBehavior extends CActiveRecordBehavior
 
         $pathHash = $this->getPathHash($resourceName);
 
+        if(isset($options['stripHashName']) && $options['stripHashName'] === true) {
+            $resourceName = substr($resourceName, 6);
+        }
+
         $absoluteResourcePath = $this->getAbsoluteResourcePath() . DIRECTORY_SEPARATOR .
                                 $pathHash . DIRECTORY_SEPARATOR .
                                 $resourceName;
 
         if (!file_exists($absoluteResourcePath)) {
             return $noResourceImage;
-        }
-
-        if(isset($options['stripHashName']) && $options['stripHashName'] === true) {
-            $resourceName = substr($resourceName, 6);
         }
 
         $resourcePath = $this->getRelativeResourcePath() . DIRECTORY_SEPARATOR .

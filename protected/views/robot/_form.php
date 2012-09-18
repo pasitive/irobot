@@ -119,12 +119,12 @@
     <?php if (!empty($model->texture_file)): ?>
         <?php
         if (!is_array(CJSON::decode($model->texture_file))) {
-            echo CHtml::image($model->getTextureFileByName($model->texture_file), '', array('width' => 150));
+            echo CHtml::image($model->getTextureFileByName($model->texture_file, false, true), '', array('width' => 150));
         } else {
             $textures = CJSON::decode($model->texture_file);
             echo '<table><tr>';
             foreach ($textures as $texture) {
-                echo '<td>'.CHtml::image($model->getTextureFileByName($texture), '', array('width' => 150)) . '</td>';
+                echo '<td>'.CHtml::image($model->getTextureFileByName($texture, false, true), '', array('width' => 150)) . '</td>';
             }
             echo '</tr></table>';
         }

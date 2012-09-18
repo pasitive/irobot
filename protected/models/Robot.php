@@ -54,8 +54,6 @@ class Robot extends CActiveRecord
         return $this->getResourcePath($this->file_path_pod, 0, array('onlyFileName' => $onlyFileName));
     }
 
-
-
     public function getTextureFileByName($name, $onlyFileName = false, $stripHashName = false)
     {
         return $this->getResourcePath($name, 0, array(
@@ -93,7 +91,7 @@ class Robot extends CActiveRecord
             array('name, description, price, cleaning_text', 'required'),
             array('name, file_path, screen_name, link_url', 'length', 'max' => 255),
             array('price', 'length', 'max' => 10),
-            array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file', 'safe'),
+            array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file, newFilePathPod', 'safe'),
             array('link_url', 'url'),
             array('file_path', 'file', 'allowEmpty' => false, 'types' => '3ds', 'on' => 'insert'),
             array('file_path_pod', 'file', 'allowEmpty' => false, 'types' => 'pod', 'on' => 'insert'),
@@ -184,8 +182,6 @@ class Robot extends CActiveRecord
         $attribute = $this->isNewRecord ? 'file_path_pod' : 'newFilePathPod';
         $file = CUploadedFile::getInstance($this, $attribute);
 
-        $hashString = $this->generatePathHash();
-
         if ($file !== null) {
             $fileName = Common::processFile($this, $file, $hashString);
             $this->updateByPk($this->id, array(
@@ -198,7 +194,6 @@ class Robot extends CActiveRecord
         $files = CUploadedFile::getInstances($this, $attribute);
 
         if (!empty($files)) {
-            $hashString = $this->generatePathHash();
             $texture = array();
             foreach ($files as $file) {
                 if ($file !== null) {

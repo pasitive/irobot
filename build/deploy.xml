@@ -34,14 +34,21 @@
              display="true"/>
 
         <ssh host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
-             command="chmod 0777 ${deploy.path}/shared/upload &amp;&amp; chmod 0777 ${deploy.path}/shared/runtime &amp;&amp; chmod 0777 ${deploy.path}/shared/assets"
+             command="chmod 0777 ${deploy.path}/shared/uploads &amp;&amp; chmod 0777 ${deploy.path}/shared/runtime &amp;&amp; chmod 0777 ${deploy.path}/shared/assets"
              display="true"/>
 
-        <ssh description="Removing upload link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
+        <ssh description="Removing uploads link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
              command="rm -rf ${deploy.path}/releases/${revision}/public/uploads"
              display="true"/>
         <ssh description="Linking upload" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
              command="ln -s ${deploy.path}/shared/uploads ${deploy.path}/releases/${revision}/public/uploads"
+             display="true"/>
+
+        <ssh description="Removing packages link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
+             command="rm -rf ${deploy.path}/releases/${revision}/public/packages"
+             display="true"/>
+        <ssh description="Linking upload" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
+             command="ln -s ${deploy.path}/shared/packages ${deploy.path}/releases/${revision}/public/packages"
              display="true"/>
 
         <ssh description="Removing assets link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
@@ -49,6 +56,9 @@
              display="true"/>
         <ssh description="Linking assets" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
              command="ln -s ${deploy.path}/shared/assets ${deploy.path}/releases/${revision}/public/assets"
+             display="true"/>
+        <ssh description="Clearing assets" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"
+             command="rm -rf ${deploy.path}/shared/assets/*"
              display="true"/>
 
         <ssh description="Removing runtime link" host="${deploy.host}" port="${deploy.port}" username="${deploy.user}" password="${deploy.password}"

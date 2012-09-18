@@ -92,7 +92,6 @@ class RobotController extends Controller
             }
         }
 
-
         //Photos
         $photoDir = 'Photo';
         $zip->addEmptyDir($rootDir . DIRECTORY_SEPARATOR . $photoDir);

@@ -21,6 +21,8 @@
     <fileset dir="." id="sources">
         <exclude name="public/assets/"/>
         <exclude name="protected/runtime/"/>
+        <exclude name="public/uploads/"/>
+        <exclude name="public/packages/"/>
         <include name="framework/**/*"/>
         <include name="protected/**/*"/>
         <include name="public/**/*"/>

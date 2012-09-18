@@ -29,16 +29,19 @@ class Common
         $uploadPath = $model->generatePath($hashString);
         if($saveFileName) {
             $fileName = $file->getName();
+            $hashedFileName = $hashString . $fileName;
+            $filePath = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
+            $file->saveAs($filePath);
+
+            return $hashedFileName;
         } else {
             $fileName = md5(microtime(true) . $file->getTempName()) . '.' . $file->getExtensionName();
+            $fileName = $hashString . $fileName;
+            $filePath = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
+            $file->saveAs($filePath);
+
+            return $fileName;
         }
-        $fileName = $hashString . $fileName;
-
-        $filePath = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
-
-        $file->saveAs($filePath);
-
-        return $fileName;
     }
 
     public static function processImage(CModel $model, CUploadedFile $photo, $wh = false, $hashString)
@@ -59,6 +62,7 @@ class Common
         } else {
             $fileName = md5(Yii::app()->user->id . $photo->getName()) . '.' . $image->ext;
         }
+
         $fileName = $hashString . $fileName;
 
         $file = $uploadPath . DIRECTORY_SEPARATOR . $fileName;
