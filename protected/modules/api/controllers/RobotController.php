@@ -319,6 +319,7 @@ class RobotController extends Controller
             'name' => $model->name,
             'screenName' => $model->screen_name,
             'description' => $model->description,
+            'price' => Yii::app()->numberFormatter->formatCurrency($model->price, 'RUB'),
             'preview' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(200),
             'image' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(0),
             'mainFile' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePath(),
