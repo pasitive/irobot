@@ -21,9 +21,9 @@ class RobotController extends Controller
     {
         $_viewData = array();
         $model = Robot::model()
-                ->with('robotFeatures')
-                ->with('robotEquipments')
-                ->findByPk($id);
+            ->with('robotFeatures')
+            ->with('robotEquipments')
+            ->findByPk($id);
 
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
@@ -34,10 +34,10 @@ class RobotController extends Controller
             $feature = $buf['feature'];
             $robotFeature = $buf['robotFeature'];
             $_viewData = CMap::mergeArray($_viewData,
-                                          array(
-                                               'feature' => $feature,
-                                               'robotFeature' => $robotFeature,
-                                          ));
+                array(
+                    'feature' => $feature,
+                    'robotFeature' => $robotFeature,
+                ));
         }
 
         $buf = $this->loadModelEquipmentForUpdate($model);
@@ -45,10 +45,10 @@ class RobotController extends Controller
             $equipment = $buf['equipment'];
             $robotEquipment = $buf['robotEquipment'];
             $_viewData = CMap::mergeArray($_viewData,
-                                          array(
-                                               'equipment' => $equipment,
-                                               'robotEquipment' => $robotEquipment,
-                                          ));
+                array(
+                    'equipment' => $equipment,
+                    'robotEquipment' => $robotEquipment,
+                ));
         }
 
         $_viewData['model'] = $model;
@@ -81,12 +81,12 @@ class RobotController extends Controller
         $this->processPostRequest($model, $robotFeature, $robotEquipment);
 
         $this->render('create', array(
-                                     'model' => $model,
-                                     'feature' => $feature,
-                                     'robotFeature' => $robotFeature,
-                                     'equipment' => $equipment,
-                                     'robotEquipment' => $robotEquipment,
-                                ));
+            'model' => $model,
+            'feature' => $feature,
+            'robotFeature' => $robotFeature,
+            'equipment' => $equipment,
+            'robotEquipment' => $robotEquipment,
+        ));
     }
 
     /**
@@ -98,9 +98,9 @@ class RobotController extends Controller
     {
         $_viewData = array();
         $model = Robot::model()
-                ->with('robotFeatures')
-                ->with('robotEquipments')
-                ->cache(3600)->findByPk($id);
+            ->with('robotFeatures')
+            ->with('robotEquipments')
+            ->cache(3600)->findByPk($id);
 
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');
@@ -111,10 +111,10 @@ class RobotController extends Controller
             $feature = $buf['feature'];
             $robotFeature = $buf['robotFeature'];
             $_viewData = CMap::mergeArray($_viewData,
-                                          array(
-                                               'feature' => $feature,
-                                               'robotFeature' => $robotFeature,
-                                          ));
+                array(
+                    'feature' => $feature,
+                    'robotFeature' => $robotFeature,
+                ));
         } else {
             $robotFeature = null;
         }
@@ -124,10 +124,10 @@ class RobotController extends Controller
             $equipment = $buf['equipment'];
             $robotEquipment = $buf['robotEquipment'];
             $_viewData = CMap::mergeArray($_viewData,
-                                          array(
-                                               'equipment' => $equipment,
-                                               'robotEquipment' => $robotEquipment,
-                                          ));
+                array(
+                    'equipment' => $equipment,
+                    'robotEquipment' => $robotEquipment,
+                ));
         } else {
             $robotEquipment = null;
         }
@@ -156,8 +156,7 @@ class RobotController extends Controller
             // if AJAX request (triggered by deletion via admin grid view), we should not redirect the browser
             if (!isset($_GET['ajax']))
                 $this->redirect(isset($_POST['returnUrl']) ? $_POST['returnUrl'] : array('index'));
-        }
-        else
+        } else
             throw new CHttpException(400, 'Invalid request. Please do not repeat this request again.');
     }
 
@@ -168,13 +167,39 @@ class RobotController extends Controller
     {
         $model = new Robot('search');
 
+        if (isset($_POST['Robot']) && count($_POST['Robot'] > 0)) {
+
+            $criteria = new CDbCriteria();
+            $criteria->addInCondition('id', array_keys($_POST['Robot']));
+            $criteria->index = 'id';
+            $items = Robot::model()->findAll($criteria);
+            $valid = true;
+            foreach ($items as $id => $item) {
+                if (isset($_POST['Robot'][$id])) {
+                    $item->attributes = $_POST['Robot'][$id];
+                }
+                $valid = $item->validate() && $valid;
+            }
+
+            if($valid) {
+                foreach($items as $item) {
+                    $item->save();
+                }
+                Yii::app()->user->setFlash('success', 'Сортировка обновлена');
+                $this->refresh();
+            }
+        }
+
         $model->unsetAttributes(); // clear any default values
-        if (isset($_GET['Robot']))
+        if (isset($_GET['Robot'])) {
             $model->attributes = $_GET['Robot'];
+        }
+
 
         $this->render('index', array(
-                                    'model' => $model,
-                               ));
+            'model' => $model,
+            'items' => isset($items) ? $items : array(),
+        ));
     }
 
     /**
@@ -274,17 +299,17 @@ class RobotController extends Controller
                 // Обработка модели
                 $model->attributes = $_POST['Robot'];
 
-                if($robotFeature !== null) {
-                    foreach($robotFeature as $id => $item) {
-                        if(isset($_POST['RobotFeature'][$id])) {
+                if ($robotFeature !== null) {
+                    foreach ($robotFeature as $id => $item) {
+                        if (isset($_POST['RobotFeature'][$id])) {
                             $item->attributes = $_POST['RobotFeature'][$id];
                         }
                     }
                 }
 
-                if($robotEquipment !== null) {
-                    foreach($robotEquipment as $id => $item) {
-                        if(isset($_POST['RobotEquipment'][$id])) {
+                if ($robotEquipment !== null) {
+                    foreach ($robotEquipment as $id => $item) {
+                        if (isset($_POST['RobotEquipment'][$id])) {
                             $item->attributes = $_POST['RobotEquipment'][$id];
                         }
                     }
@@ -347,7 +372,7 @@ class RobotController extends Controller
 
     public function actionAjaxGroupDelete()
     {
-        if(Yii::app()->request->getIsAjaxRequest()) {
+        if (Yii::app()->request->getIsAjaxRequest()) {
 
         }
     }

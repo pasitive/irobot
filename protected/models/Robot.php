@@ -18,6 +18,7 @@
  * @property string $texture_name
  * @property string $cleaning_text
  * @property string $file_path_pod
+ * @property integer $sort
  *
  * The followings are the available model relations:
  * @property RobotEquipment[] $robotEquipments
@@ -29,7 +30,6 @@ class Robot extends CActiveRecord
     public $newImage;
     public $newTextureFile;
     public $newFilePathPod;
-
 
     public $imageSize = array(100, 200, 1024);
 
@@ -63,6 +63,13 @@ class Robot extends CActiveRecord
     }
 
 
+    public function defaultScope()
+    {
+        return array(
+            'order' => 'sort DESC',
+        );
+    }
+
     /**
      * Returns the static model of the specified AR class.
      * @return Robot the static model class
@@ -91,6 +98,7 @@ class Robot extends CActiveRecord
             array('name, description, price, cleaning_text', 'required'),
             array('name, file_path, screen_name, link_url', 'length', 'max' => 255),
             array('price', 'length', 'max' => 10),
+            array('sort', 'numerical', 'integerOnly' => true),
             array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file, newFilePathPod', 'safe'),
             array('link_url', 'url'),
             array('file_path', 'file', 'allowEmpty' => false, 'types' => '3ds', 'on' => 'insert'),
@@ -141,6 +149,7 @@ class Robot extends CActiveRecord
             'newTextureFile' => 'Новые файлы текстур модели',
             'texture_name' => 'Оригинальное имя файла текстуры',
             'cleaning_text' => 'Технология уборки',
+            'sort' => 'Сортировка',
         );
     }
 

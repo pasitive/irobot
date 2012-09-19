@@ -2,6 +2,15 @@
 <div class="container">
 	<div class="span-19">
 		<div id="content">
+
+            <?php
+            foreach (Yii::app()->user->getFlashes() as $key => $message) {
+                if ($key == 'error' || $key == 'success' || $key == 'notice') {
+                    echo "<div class='flash-{$key}'>{$message}</div>";
+                }
+            }
+            ?>
+
 			<?php echo $content; ?>
 		</div><!-- content -->
 	</div>
