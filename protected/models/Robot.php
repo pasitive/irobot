@@ -19,6 +19,7 @@
  * @property string $cleaning_text
  * @property string $file_path_pod
  * @property integer $sort
+ * @property integer $status
  *
  * The followings are the available model relations:
  * @property RobotEquipment[] $robotEquipments
@@ -26,6 +27,10 @@
  */
 class Robot extends CActiveRecord
 {
+
+    const STATUS_ACTIVE = 1;
+    const STATUS_DISABLED = 0;
+
     public $newFilePath;
     public $newImage;
     public $newTextureFile;
@@ -70,6 +75,15 @@ class Robot extends CActiveRecord
         );
     }
 
+    public function active()
+    {
+        $criteria = $this->getDbCriteria();
+        $criteria->addColumnCondition(array(
+            'status' => Robot::STATUS_ACTIVE,
+        ));
+        return $this;
+    }
+
     /**
      * Returns the static model of the specified AR class.
      * @return Robot the static model class
@@ -98,7 +112,7 @@ class Robot extends CActiveRecord
             array('name, description, price, cleaning_text', 'required'),
             array('name, file_path, screen_name, link_url', 'length', 'max' => 255),
             array('price', 'length', 'max' => 10),
-            array('sort', 'numerical', 'integerOnly' => true),
+            array('sort, status', 'numerical', 'integerOnly' => true),
             array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file, newFilePathPod', 'safe'),
             array('link_url', 'url'),
             array('file_path', 'file', 'allowEmpty' => false, 'types' => '3ds', 'on' => 'insert'),
@@ -150,6 +164,7 @@ class Robot extends CActiveRecord
             'texture_name' => 'Оригинальное имя файла текстуры',
             'cleaning_text' => 'Технология уборки',
             'sort' => 'Сортировка',
+            'status' => 'Статус',
         );
     }
 

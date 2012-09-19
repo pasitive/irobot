@@ -6,14 +6,11 @@ class RobotController extends Controller
 
     public function actionList($format = 'xml')
     {
-
         switch ($format) {
             case self::FORMAT_XML:
-
                 $this->isJsonResponse = false;
                 Header('Content-type: application/xml');
                 echo $this->getXml()->saveXML();
-
                 break;
 
             case self::FORMAT_JSON:
@@ -181,7 +178,7 @@ class RobotController extends Controller
 
     protected function getJson()
     {
-        $model = Robot::model()->findAll();
+        $model = $this->loadAll();
 
         $response = array();
         foreach ($model as $item) {
@@ -199,7 +196,7 @@ class RobotController extends Controller
 
         $xml = new Xml;
 
-        $model = Robot::model()->findAll();
+        $model = $this->loadAll();
 
         $robots = $xml->createElement('Robots');
         $robots->setAttribute('updatedAt', date_format(date_create($maxUpdatedAt), DATE_RFC822));
@@ -334,7 +331,7 @@ class RobotController extends Controller
             $response['texture'] = array($texture);
         } else {
             $buf = CJSON::decode($model->texture_file);
-            foreach($buf as $texture) {
+            foreach ($buf as $texture) {
                 $textures[] = Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getTextureFileByName($texture, false, true);
             }
             $response['texture'] = $textures;
@@ -394,11 +391,19 @@ class RobotController extends Controller
 
     protected function loadModel($id)
     {
-        $model = Robot::model()->findByPk($id);
+        $model = Robot::model()->active()->findByPk($id);
+
         if (!$model) {
             throw new CHttpException(400, 'Error loading model', Error::ERROR_BAD_REQUEST);
         }
 
+        return $model;
+    }
+
+
+    protected function loadAll()
+    {
+        $model = Robot::model()->active()->findAll();
         return $model;
     }
 
