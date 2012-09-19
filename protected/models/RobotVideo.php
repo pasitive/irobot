@@ -68,7 +68,7 @@ class RobotVideo extends CActiveRecord
             array('robot_id', 'required'),
             array('robot_id', 'numerical', 'integerOnly' => true),
             array('file_name, preview_image', 'length', 'max' => 255),
-            array('file_name', 'file', 'allowEmpty' => false, 'types' => array('wmv', 'avi'), 'wrongType' => 'Вы можете закачать видео ТОЛЬКО в формате *.wmv, *.avi'),
+            array('file_name', 'file', 'allowEmpty' => false, 'types' => array('mp4'), 'wrongType' => 'Вы можете закачать видео ТОЛЬКО в формате *.mp4'),
             array('preview_image', 'file', 'allowEmpty' => false, 'types' => array('jpeg', 'jpg', 'png', 'gif'), 'wrongType' => 'Вы можете закачать видео ТОЛЬКО в формате *.jp(e)g, *.png, *.gif'),
             array('created_at, updated_at, newFileName, newPreviewImage', 'safe'),
             // The following rule is used by search().
