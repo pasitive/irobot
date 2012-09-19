@@ -236,11 +236,11 @@ class RobotController extends Controller
         $textureNode = $xml->createElement('TextureFile');
 
         if (!is_array(CJSON::decode($model->texture_file))) {
-            $textureNode->nodeValue = $model->getTextureFileByName($model->texture_file, true, true);
+            $textureNode->nodeValue = $model->getTextureFileByName($model->texture_file, false, true);
         } else {
             $textures = CJSON::decode($model->texture_file);
             foreach ($textures as $texture) {
-                $textureNodeChild = $xml->createElement('Texture', $model->getTextureFileByName($texture, true, true));
+                $textureNodeChild = $xml->createElement('Texture', $model->getTextureFileByName($texture, false, true));
                 $textureNode->appendChild($textureNodeChild);
             }
         }
