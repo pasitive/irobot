@@ -402,7 +402,6 @@ class RobotController extends Controller
         return $model;
     }
 
-
     protected function loadAll()
     {
         $model = Robot::model()->active()->findAll();

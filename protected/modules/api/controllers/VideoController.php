@@ -49,7 +49,7 @@ class VideoController extends Controller
 
     protected function loadModel($robotId)
     {
-        if ($robotId) {
+        if (!empty($robotId)) {
             $model = Robot::model()->findByPk($robotId);
 
             if (!$model) {
