@@ -125,7 +125,6 @@ class RobotController extends Controller
                 'pageSize' => 999,
             ),
         ));
-
         $description = $this->render('_description', array(
             'description' => $model->description,
             'dataProvider' => $dataProvider,
