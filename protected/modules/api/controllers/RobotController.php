@@ -281,7 +281,7 @@ class RobotController extends Controller
 
         $photos = $xml->createElement('Photos');
         $modelPhotos = !empty($model->robotPhotos) ? $model->robotPhotos : array();
-        foreach ($modelPhotos as $idnex => $photoItem) {
+        foreach ($modelPhotos as $index => $photoItem) {
             $photo = $xml->createElement('Photo');
             $photo->setAttribute('updatedAt', date_format(date_create($photoItem->updated_at), DATE_RFC822));
             $photo->appendChild($xml->createElement('Preview50', 'Photo\\' . $photoItem->getImage(50, true)));
@@ -297,9 +297,9 @@ class RobotController extends Controller
         foreach ($modelVideos as $index => $videoItem) {
             $video = $xml->createElement('Video');
             $video->setAttribute('updatedAt', date_format(date_create($videoItem->updated_at), DATE_RFC822));
-            $video->appendChild($xml->createElement('FileName', $videoItem->getFileName(true)));
-            $video->appendChild($xml->createElement('Preview_100', $videoItem->getPreviewImage(100, true)));
-            $video->appendChild($xml->createElement('Preview_200', $videoItem->getPreviewImage(200, true)));
+            $video->appendChild($xml->createElement('FileName', $videoItem->video->getFileName(true)));
+            $video->appendChild($xml->createElement('Preview_100', $videoItem->video->getPreviewImage(100, true)));
+            $video->appendChild($xml->createElement('Preview_200', $videoItem->video->getPreviewImage(200, true)));
 
             $videos->appendChild($video);
         }
@@ -380,9 +380,9 @@ class RobotController extends Controller
 
             $response['video'][] = array(
                 'updateAt' => date_format(date_create($featureItem->updated_at), DATE_RFC822),
-                'fileName' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $videoItem->getFileName(false),
-                'preview100' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $videoItem->getPreviewImage(100),
-                'preview200' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $videoItem->getPreviewImage(200),
+                'fileName' => Yii::app()->getBaseUrl(true) . $videoItem->video->getFileName(false),
+                'preview100' => Yii::app()->getBaseUrl(true) . $videoItem->video->getPreviewImage(100),
+                'preview200' => Yii::app()->getBaseUrl(true) . $videoItem->video->getPreviewImage(200),
             );
 
         }

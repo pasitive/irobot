@@ -12,7 +12,7 @@ class VideoController extends Controller
 
     public function actionList($robotId = 0, $format = 'xml')
     {
-        switch($format) {
+        switch ($format) {
             case 'xml':
                 $this->listXml($robotId);
                 break;
@@ -31,15 +31,15 @@ class VideoController extends Controller
         $model = $this->loadModel($robotId);
 
         $response = array();
-        foreach($model as $item) {
+        foreach ($model as $item) {
 
             $response[] = array(
                 'id' => $item->id,
                 'robotId' => $item->robot_id,
                 'robotName' => $item->robot->name,
-                'file_name' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $item->getFileName(),
-                'preview_100' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $item->getPreviewImage(100),
-                'preview_200' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $item->getPreviewImage(200),
+                'file_name' => Yii::app()->getBaseUrl(true) . $item->video->getFileName(),
+                'preview_100' => Yii::app()->getBaseUrl(true) . $item->video->getPreviewImage(100),
+                'preview_200' => Yii::app()->getBaseUrl(true) . $item->video->getPreviewImage(200),
             );
 
         }
@@ -49,20 +49,22 @@ class VideoController extends Controller
 
     protected function loadModel($robotId)
     {
-        $criteria = new CDbCriteria();
-        if (!empty($robotId)) {
-            $criteria->addColumnCondition(array(
-                'robot_id' => $robotId,
-            ));
+        if ($robotId) {
+            $model = Robot::model()->findByPk($robotId);
+
+            if (!$model) {
+                throw new CHttpException(200, 'Robot not found', Error::ERROR_EMPTY_RESPONSE);
+            }
+            $robotVideo = $model->robotVideos;
+        } else {
+            $robotVideo = RobotVideo::model()->findAll();
         }
 
-        $model = RobotVideo::model()->findAll($criteria);
-
-        if (!$model) {
-            throw new CHttpException(200, 'No data to pack', Error::ERROR_EMPTY_RESPONSE);
+        if (!$robotVideo) {
+            throw new CHttpException(200, 'Robot has ho video', Error::ERROR_EMPTY_RESPONSE);
         }
 
-        return $model;
+        return $robotVideo;
     }
 
     protected function listXml($robotId = 0)
@@ -77,12 +79,12 @@ class VideoController extends Controller
         foreach ($model as $item) {
             $video = $xml->createElement('Video');
             $video->setAttribute('updatedAt', date_format(date_create($item->updated_at), DATE_RFC822));
-            $video->appendChild($xml->createElement('ID', $item->id));
+            $video->appendChild($xml->createElement('ID', $item->video->id));
             $video->appendChild($xml->createElement('RobotId', $item->robot_id));
             $video->appendChild($xml->createElement('RobotName', $item->robot->name));
-            $video->appendChild($xml->createElement('FileName', $item->file_name));
-            $video->appendChild($xml->createElement('Preview_100', $item->getPreviewImage(100, true)));
-            $video->appendChild($xml->createElement('Preview_200', $item->getPreviewImage(200, true)));
+            $video->appendChild($xml->createElement('FileName', $item->video->file_name));
+            $video->appendChild($xml->createElement('Preview_100', $item->video->getPreviewImage(100, true)));
+            $video->appendChild($xml->createElement('Preview_200', $item->video->getPreviewImage(200, true)));
             $videos->appendChild($video);
         }
 
@@ -97,7 +99,7 @@ class VideoController extends Controller
         $this->isJsonResponse = false;
         $rootDir = 'Video';
 
-        $model = RobotVideo::model()->findByPk($videoId);
+        $model = Video::model()->findByPk($videoId);
 
         if (!$model) {
             throw new CHttpException(400, 'Video not found', Error::ERROR_EMPTY_RESPONSE);

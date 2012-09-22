@@ -56,6 +56,8 @@ class RobotVideo extends CActiveRecord
 		// NOTE: you may need to adjust the relation name and the related
 		// class name for the relations automatically generated below.
 		return array(
+            'robot' => array(self::BELONGS_TO, 'Robot', 'robot_id'),
+            'video' => array(self::BELONGS_TO, 'Video', 'video_id'),
 		);
 	}
 
