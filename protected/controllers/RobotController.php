@@ -319,6 +319,9 @@ class RobotController extends Controller
         foreach ($video as $item) {
             if (!isset($robotVideo[$item->id])) {
                 $robotVideo[$item->id] = new RobotVideo();
+                $robotVideo[$item->id]->status = 0;
+            } else {
+                $robotVideo[$item->id]->status = 1;
             }
             unset($item);
         }
@@ -343,6 +346,7 @@ class RobotController extends Controller
             isset($_POST['RobotEquipment']) ||
             isset($_POST['RobotVideo'])
         ) {
+
             $db = Yii::app()->db;
             $transaction = $db->beginTransaction();
             try {
@@ -368,10 +372,8 @@ class RobotController extends Controller
 
                 if($robotVideo !== null) {
                     foreach ($robotVideo as $id => $item) {
-                        if (isset($_POST['RobotVideo'][$id]) && intval($_POST['RobotVideo'][$id]['status']) == 1) {
+                        if (isset($_POST['RobotVideo'][$id])) {
                             $item->attributes = $_POST['RobotVideo'][$id];
-                        } else {
-                            unset($robotVideo[$id]);
                         }
                     }
                 }
@@ -447,7 +449,13 @@ class RobotController extends Controller
                 }
 
                 $transaction->commit();
-                Yii::app()->user->setFlash('success', 'Новая модель упешно добавлена.');
+
+                if($model->isNewRecord) {
+                    $message = 'добвлена';
+                } else {
+                    $message = 'обновлена';
+                }
+                Yii::app()->user->setFlash('success', 'Новая модель упешно '.$message.'.');
 
             } catch (Exception $e) {
                 $transaction->rollback();
