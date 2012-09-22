@@ -37,7 +37,7 @@
                                                           array('label' => 'Характеристики', 'url' => array('/feature'), 'visible' => !Yii::app()->user->isGuest),
                                                           array('label' => 'Модели', 'url' => array('/robot'), 'visible' => !Yii::app()->user->isGuest),
                                                           array('label' => 'Фото', 'url' => array('/robotPhoto'), 'visible' => !Yii::app()->user->isGuest),
-                                                          array('label' => 'Видео', 'url' => array('/robotVideo'), 'visible' => !Yii::app()->user->isGuest),
+                                                          array('label' => 'Видео', 'url' => array('/video'), 'visible' => !Yii::app()->user->isGuest),
                                                           array('label' => 'Пользователи', 'url' => array('/user'), 'visible' => !Yii::app()->user->isGuest),
                                                           array('label' => 'Лог действий', 'url' => array('/actionLog'), 'visible' => !Yii::app()->user->isGuest),
                                                           array('label' => 'Вход', 'url' => array('/session/create'), 'visible' => Yii::app()->user->isGuest),

@@ -64,21 +64,25 @@ class RobotController extends Controller
     {
         $model = new Robot();
 
-        $feature = Feature::model()->findAll();
+        $feature = Feature::model()->findAll(array('index' => 'id'));
         $robotFeature = array();
-        foreach ($feature as $item) {
-            $feature[$item->id] = $item;
-            $robotFeature[$item->id] = new RobotFeature();
+        foreach ($feature as $id => $item) {
+            $robotFeature[$id] = new RobotFeature();
         }
 
-        $equipment = Equipment::model()->findAll();
+        $equipment = Equipment::model()->findAll(array('index' => 'id'));
         $robotEquipment = array();
-        foreach ($equipment as $item) {
-            $equipment[$item->id] = $item;
-            $robotEquipment[$item->id] = new RobotEquipment();
+        foreach ($equipment as $id => $item) {
+            $robotEquipment[$id] = new RobotEquipment();
         }
 
-        $this->processPostRequest($model, $robotFeature, $robotEquipment);
+        $video = Video::model()->active()->findAll(array('index' => 'id'));
+        $robotVideo = array();
+        foreach($video as $id => $item) {
+            $robotVideo[$id] = new RobotVideo();
+        }
+
+        $this->processPostRequest($model, $robotFeature, $robotEquipment, $robotVideo);
 
         $this->render('create', array(
             'model' => $model,
@@ -86,6 +90,8 @@ class RobotController extends Controller
             'robotFeature' => $robotFeature,
             'equipment' => $equipment,
             'robotEquipment' => $robotEquipment,
+            'video' => $video,
+            'robotVideo' => $robotVideo,
         ));
     }
 
@@ -100,6 +106,7 @@ class RobotController extends Controller
         $model = Robot::model()
             ->with('robotFeatures')
             ->with('robotEquipments')
+            ->with('robotVideos')
             ->cache(3600)->findByPk($id);
 
         if ($model === null) {
@@ -132,9 +139,22 @@ class RobotController extends Controller
             $robotEquipment = null;
         }
 
+        $buf = $this->loadModelVideoForUpdate($model);
+        if ($buf !== false) {
+            $video = $buf['video'];
+            $robotVideo = $buf['robotVideo'];
+            $_viewData = CMap::mergeArray($_viewData,
+                array(
+                    'video' => $video,
+                    'robotVideo' => $robotVideo,
+                ));
+        } else {
+            $robotVideo = null;
+        }
+
         $_viewData['model'] = $model;
 
-        $this->processPostRequest($model, $robotFeature, $robotEquipment);
+        $this->processPostRequest($model, $robotFeature, $robotEquipment, $robotVideo);
 
         $this->render('update', $_viewData);
     }
@@ -172,7 +192,9 @@ class RobotController extends Controller
             $criteria = new CDbCriteria();
             $criteria->addInCondition('id', array_keys($_POST['Robot']));
             $criteria->index = 'id';
+
             $items = Robot::model()->findAll($criteria);
+
             $valid = true;
             foreach ($items as $id => $item) {
                 if (isset($_POST['Robot'][$id])) {
@@ -279,6 +301,34 @@ class RobotController extends Controller
         );
     }
 
+    protected function loadModelVideoForUpdate(Robot $model)
+    {
+        $video = Video::model()->active()->findAll(array('index' => 'id'));
+        if (empty($video)) {
+            return false;
+        }
+
+        $robotVideoBuf = $model->robotVideos;
+        $robotVideo = array();
+        foreach ($robotVideoBuf as $item) {
+            $robotVideo[$item->video_id] = $item;
+        }
+
+        unset($robotVideoBuf);
+
+        foreach ($video as $item) {
+            if (!isset($robotVideo[$item->id])) {
+                $robotVideo[$item->id] = new RobotVideo();
+            }
+            unset($item);
+        }
+
+        return array(
+            'robotVideo' => $robotVideo,
+            'video' => $video,
+        );
+    }
+
     /**
      * @throws CHttpException
      * @param Robot $model
@@ -286,11 +336,12 @@ class RobotController extends Controller
      * @param null $robotEquipment
      * @return void
      */
-    protected function processPostRequest(Robot $model, $robotFeature = null, $robotEquipment = null)
+    protected function processPostRequest(Robot $model, $robotFeature = null, $robotEquipment = null, $robotVideo = null)
     {
         if (isset($_POST['Robot']) ||
             isset($_POST['RobotFeature']) ||
-            isset($_POST['RobotEquipment'])
+            isset($_POST['RobotEquipment']) ||
+            isset($_POST['RobotVideo'])
         ) {
             $db = Yii::app()->db;
             $transaction = $db->beginTransaction();
@@ -311,6 +362,16 @@ class RobotController extends Controller
                     foreach ($robotEquipment as $id => $item) {
                         if (isset($_POST['RobotEquipment'][$id])) {
                             $item->attributes = $_POST['RobotEquipment'][$id];
+                        }
+                    }
+                }
+
+                if($robotVideo !== null) {
+                    foreach ($robotVideo as $id => $item) {
+                        if (isset($_POST['RobotVideo'][$id]) && intval($_POST['RobotVideo'][$id]['status']) == 1) {
+                            $item->attributes = $_POST['RobotVideo'][$id];
+                        } else {
+                            unset($robotVideo[$id]);
                         }
                     }
                 }
@@ -360,13 +421,40 @@ class RobotController extends Controller
                     }
                 }
 
-                $transaction->commit();
+                if ($robotVideo !== null) {
+                    // Обработка комплектации
+                    $robotVideoValid = true;
+                    foreach ($robotVideo as $id => $item) {
+                        if (isset($_POST['RobotVideo'][$id]) && intval($_POST['RobotVideo'][$id]['status']) == 1) {
+                            $item->video_id = $id;
+                            $item->robot_id = intval($model->id);
+                            $robotVideoValid = $item->validate() && $robotVideoValid;
+                        } else {
+                            RobotVideo::model()->deleteAllByAttributes(array(
+                                'robot_id' => $model->id,
+                                'video_id' => $id,
+                            ));
+                        }
+                    }
 
-                $this->redirect(array('/robot/index'));
+                    if ($robotVideoValid) {
+                        foreach ($robotVideo as $item) {
+                            if (!$item->save()) {
+                                throw new CHttpException(400, 'Не удалось сохранить элемент видео ' . $item->id);
+                            }
+                        }
+                    }
+                }
+
+                $transaction->commit();
+                Yii::app()->user->setFlash('success', 'Новая модель упешно добавлена.');
 
             } catch (Exception $e) {
                 $transaction->rollback();
+                Yii::app()->user->setFlash('error', 'При добавлении модели произошла ошибка.');
             }
+
+            $this->redirect(array('/robot/index'));
         }
     }
 

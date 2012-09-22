@@ -45,6 +45,14 @@ if(!empty($equipment) && !empty($robotEquipment)) {
    );
 }
 
+if(!empty($video) && !empty($robotVideo)) {
+    $tabs['video'] = array(
+        'title' => 'Видео',
+        'view' => '/robotVideo/_form',
+        'data' => array('robotVideo' => $robotVideo, 'video' => $video, 'form' => $form),
+    );
+}
+
 $this->widget('CTabView', array(
                                'tabs' => $tabs
                           ));

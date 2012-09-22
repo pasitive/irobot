@@ -9,6 +9,6 @@ $this->menu=array(
 );
 ?>
 
-<h1>Создать видео</h1>
+<h1>Создать Video</h1>
 
 <?php echo $this->renderPartial('_form', array('model'=>$model)); ?>

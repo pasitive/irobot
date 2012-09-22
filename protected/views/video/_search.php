@@ -11,8 +11,23 @@
 	</div>
 
 	<div class="row">
-		<?php echo $form->label($model,'robot_id'); ?>
-		<?php echo $form->dropDownList($model, 'robot_id', CHtml::listData(Robot::model()->findAll(), 'id', 'name')); ?>
+		<?php echo $form->label($model,'file_name'); ?>
+		<?php echo $form->textField($model,'file_name',array('size'=>60,'maxlength'=>255)); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'preview_image'); ?>
+		<?php echo $form->textField($model,'preview_image',array('size'=>60,'maxlength'=>255)); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'status'); ?>
+		<?php echo $form->textField($model,'status'); ?>
+	</div>
+
+	<div class="row">
+		<?php echo $form->label($model,'created_at'); ?>
+		<?php echo $form->textField($model,'created_at'); ?>
 	</div>
 
 	<div class="row">

@@ -1,52 +1,37 @@
+<?php if (isset($robotVideo)): ?>
+
+<?php $readonly = (isset($readonly) && $readonly === true) ? true : false; ?>
+
 <div class="form">
-
-    <?php $form = $this->beginWidget('CActiveForm',
-                                     array(
-                                          'id' => 'robot-video-form',
-                                          'enableAjaxValidation' => false,
-                                          'htmlOptions' => array('enctype' => 'multipart/form-data'),
-                                     )); ?>
-
-    <p class="note">Поля отмеченные звездочкой <span class="required">*</span> обязательны для заполнения.</p>
-
-    <?php echo $form->errorSummary($model); ?>
-
-    <div class="row">
-        <?php echo $form->labelEx($model, 'robot_id'); ?>
-        <?php echo $form->dropDownList($model, 'robot_id', CHtml::listData(Robot::model()->findAll(), 'id', 'name')); ?>
-        <?php echo $form->error($model, 'robot_id'); ?>
+    <h2>Видео</h2>
+    <div class="grid-view">
+        <table class="items">
+            <?php foreach ($robotVideo as $i => $item) { ?>
+            <tr class="<?php echo $i % 2 == 0 ? 'even' : 'odd' ?>">
+                <td width="50"><?php
+                    echo CHtml::link(
+                            CHtml::image(
+                                $video[$i]->getPreviewImage(200),
+                                "",
+                                array("width" => 200)
+                            ),
+                            $video[$i]->getPreviewImage(0),
+                            array("class" => "fancy")
+                    )
+                    ?></td>
+                <td><?php echo CHtml::activeCheckBox($item, "[$i]status", array('disabled' => ($readonly ? 'disabled' : ''))) ?></td>
+            </tr>
+            <?php } ?>
+        </table>
     </div>
-
-    <?php if($model->isNewRecord) : ?>
-        
-    <div class="row">
-        <?php echo $form->labelEx($model, 'file_name'); ?>
-        <?php echo CHtml::activeFileField($model, 'file_name'); ?>
-    </div>
-
-    <div class="row">
-        <?php echo $form->labelEx($model, 'preview_image'); ?>
-        <?php echo CHtml::activeFileField($model, 'preview_image'); ?>
-    </div>
-
-    <?php else : ?>
-
-    <div class="row">
-        <?php echo $form->labelEx($model, 'newFileName'); ?>
-        <?php echo CHtml::activeFileField($model, 'newFileName'); ?>
-    </div>
-
-    <div class="row">
-        <?php echo $form->labelEx($model, 'newPreviewImage'); ?>
-        <?php echo CHtml::activeFileField($model, 'newPreviewImage'); ?>
-    </div>
-    
-    <?php endif; ?>
-
-    <div class="row buttons">
-        <?php echo CHtml::submitButton($model->isNewRecord ? 'Создать' : 'Сохранить'); ?>
-    </div>
-
-    <?php $this->endWidget(); ?>
-
 </div><!-- form -->
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        <?php if(!$readonly) { ?>
+        $('.form input[type=text]').placeholder();
+        <?php } ?>
+    })
+</script>
+
+<?php endif; ?>

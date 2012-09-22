@@ -25,12 +25,12 @@ class Controller extends CController
     public $errorCode = 0;
 
     /**
-     * Data
      * @var
      */
     public $message = null;
 
     /**
+     * Data
      * @var
      */
     public $data;
