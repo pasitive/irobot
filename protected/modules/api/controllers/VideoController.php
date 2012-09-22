@@ -51,7 +51,6 @@ class VideoController extends Controller
     {
         if (!empty($robotId)) {
             $model = Robot::model()->findByPk($robotId);
-
             if (!$model) {
                 throw new CHttpException(200, 'Robot not found', Error::ERROR_EMPTY_RESPONSE);
             }
@@ -77,15 +76,17 @@ class VideoController extends Controller
         $model = $this->loadModel($robotId);
 
         foreach ($model as $item) {
-            $video = $xml->createElement('Video');
-            $video->setAttribute('updatedAt', date_format(date_create($item->updated_at), DATE_RFC822));
-            $video->appendChild($xml->createElement('ID', $item->video->id));
-            $video->appendChild($xml->createElement('RobotId', $item->robot_id));
-            $video->appendChild($xml->createElement('RobotName', $item->robot->name));
-            $video->appendChild($xml->createElement('FileName', $item->video->file_name));
-            $video->appendChild($xml->createElement('Preview_100', $item->video->getPreviewImage(100, true)));
-            $video->appendChild($xml->createElement('Preview_200', $item->video->getPreviewImage(200, true)));
-            $videos->appendChild($video);
+            if (is_object($item->video) && get_class($item->video) == 'Video') {
+                $video = $xml->createElement('Video');
+                $video->setAttribute('updatedAt', date_format(date_create($item->updated_at), DATE_RFC822));
+                $video->appendChild($xml->createElement('ID', $item->video->id));
+                $video->appendChild($xml->createElement('RobotId', $item->robot_id));
+                $video->appendChild($xml->createElement('RobotName', $item->robot->name));
+                $video->appendChild($xml->createElement('FileName', $item->video->file_name));
+                $video->appendChild($xml->createElement('Preview_100', $item->video->getPreviewImage(100, true)));
+                $video->appendChild($xml->createElement('Preview_200', $item->video->getPreviewImage(200, true)));
+                $videos->appendChild($video);
+            }
         }
 
         $xml->appendChild($videos);
