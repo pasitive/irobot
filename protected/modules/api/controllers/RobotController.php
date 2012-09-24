@@ -23,11 +23,9 @@ class RobotController extends Controller
     public function actionCheck($robotId)
     {
         $model = $this->loadModel($robotId);
-
         $response = array(
             'updated_at' => date_format(date_create($model->updated_at), DATE_RFC822),
         );
-
         $this->data = $response;
     }
 

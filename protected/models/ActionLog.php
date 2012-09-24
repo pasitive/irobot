@@ -26,6 +26,13 @@ class ActionLog extends CActiveRecord
         self::TYPE_DELETED => 'Удалено',
     );
 
+    public function defaultScope()
+    {
+        return array(
+            'order' => 'created_at DESC',
+        );
+    }
+
     /**
      * Returns the static model of the specified AR class.
      * @return ActionLog the static model class

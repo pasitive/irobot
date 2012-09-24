@@ -103,11 +103,12 @@ class RobotController extends Controller
     public function actionUpdate($id)
     {
         $_viewData = array();
+
         $model = Robot::model()
             ->with('robotFeatures')
             ->with('robotEquipments')
             ->with('robotVideos')
-            ->cache(3600)->findByPk($id);
+            ->findByPk($id);
 
         if ($model === null) {
             throw new CHttpException(404, 'The requested page does not exist.');

@@ -79,7 +79,7 @@ class VideoController extends Controller
             if (is_object($item->video) && get_class($item->video) == 'Video') {
                 $video = $xml->createElement('Video');
                 $video->setAttribute('updatedAt', date_format(date_create($item->updated_at), DATE_RFC822));
-                $video->appendChild($xml->createElement('ID', $item->video->id));
+                $video->appendChild($xml->createElement('ID', $item->id));
                 $video->appendChild($xml->createElement('RobotId', $item->robot_id));
                 $video->appendChild($xml->createElement('RobotName', $item->robot->name));
                 $video->appendChild($xml->createElement('FileName', $item->video->file_name));
@@ -100,11 +100,13 @@ class VideoController extends Controller
         $this->isJsonResponse = false;
         $rootDir = 'Video';
 
-        $model = Video::model()->findByPk($videoId);
+        $model = RobotVideo::model()->findByPk($videoId);
 
         if (!$model) {
-            throw new CHttpException(400, 'Video not found', Error::ERROR_EMPTY_RESPONSE);
+            throw new CHttpException(400, 'RobotVideo not found', Error::ERROR_EMPTY_RESPONSE);
         }
+
+        $model = $model->video;
 
         $package = new UpdatePackage();
         $hashString = $package->generatePathHash();
