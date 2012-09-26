@@ -54,6 +54,13 @@
         <?php echo $form->error($model, 'price'); ?>
     </div>
 
+    <div class="row">
+        <?php echo $form->labelEx($model, 'scale'); ?>
+        <?php echo $form->textField($model, 'scale', array('size' => 1, 'maxlength' => 3)); ?>
+        <?php echo $form->error($model, 'scale'); ?>
+        <p class="hint">Масштаб при выводе модели робота</p>
+    </div>
+
     <?php if ($model->isNewRecord) : ?>
 
     <div class="row">
@@ -124,13 +131,14 @@
             $textures = CJSON::decode($model->texture_file);
             echo '<table><tr>';
             foreach ($textures as $texture) {
-                echo '<td>'.CHtml::image($model->getTextureFileByName($texture, false, true), '', array('width' => 150)) . '</td>';
+                echo '<td>' . CHtml::image($model->getTextureFileByName($texture, false, true), '', array('width' => 150)) . '</td>';
             }
             echo '</tr></table>';
         }
         ?>
 
         <?php endif; ?>
+
     <div class="row">
         <?php echo $form->labelEx($model, 'newTextureFile'); ?>
         <?php $this->widget('CMultiFileUpload', array(

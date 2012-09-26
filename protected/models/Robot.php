@@ -20,6 +20,7 @@
  * @property string $file_path_pod
  * @property integer $sort
  * @property integer $status
+ * @property integer $scale
  *
  * The followings are the available model relations:
  * @property RobotEquipment[] $robotEquipments
@@ -111,6 +112,7 @@ class Robot extends CActiveRecord
         return array(
             array('name, description, price, cleaning_text', 'required'),
             array('name, file_path, screen_name, link_url', 'length', 'max' => 255),
+            array('scale', 'numerical', 'min' => 0.1, 'max' => 1),
             array('price', 'length', 'max' => 10),
             array('sort, status', 'numerical', 'integerOnly' => true),
             array('created_at, updated_at, newFilePath, newImage, newTextureFile, texture_file, newFilePathPod', 'safe'),
@@ -165,6 +167,7 @@ class Robot extends CActiveRecord
             'cleaning_text' => 'Технология уборки',
             'sort' => 'Сортировка',
             'status' => 'Статус',
+            'scale' => 'Масштаб',
         );
     }
 

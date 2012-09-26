@@ -229,6 +229,7 @@ class RobotController extends Controller
         $robot->appendChild($xml->createElement('MainFile', $model->getFilePath(true)));
         $robot->appendChild($xml->createElement('PanelColor', ''));
         $robot->appendChild($xml->createElement('Sort', $model->sort));
+        $robot->appendChild($xml->createElement('Scale', $model->scale));
         $robot->appendChild($xml->createElement('LinkUrl', $model->link_url));
 
         $textureNode = $xml->createElement('TextureFile');

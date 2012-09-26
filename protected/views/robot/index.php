@@ -73,6 +73,12 @@ $('.search-form form').submit(function(){
                 'htmlOptions' => array('width' => 1),
             ),
             array(
+                'name' => 'scale',
+                'type' => 'raw',
+                'value' => 'CHtml::activeCheckbox($data, "[$data->id]scale", array("size" => 1))',
+                'htmlOptions' => array('width' => 1),
+            ),
+            array(
                 'class' => 'CButtonColumn',
             ),
         ),
