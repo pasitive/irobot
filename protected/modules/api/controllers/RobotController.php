@@ -317,12 +317,13 @@ class RobotController extends Controller
             'id' => $model->id,
             'name' => $model->name,
             'screenName' => $model->screen_name,
-            'description' => $model->description,
+            'description' => $this->render('_description', array('description' => $model->description), true),
             'price' => Yii::app()->numberFormatter->formatCurrency($model->price, 'RUB'),
             'preview' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(200),
             'image' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getImage(0),
             'mainFile' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePath(),
             'mainFilePod' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getFilePathPod(),
+            'transformvideo' => Yii::app()->getBaseUrl(true) . DIRECTORY_SEPARATOR . $model->getTransformvideo(),
             'linkUrl' => $model->link_url,
         );
 

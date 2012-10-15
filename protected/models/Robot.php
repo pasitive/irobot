@@ -18,6 +18,7 @@
  * @property string $texture_name
  * @property string $cleaning_text
  * @property string $file_path_pod
+ * @property string $transformvideo
  * @property integer $sort
  * @property integer $status
  * @property integer $scale
@@ -36,6 +37,7 @@ class Robot extends CActiveRecord
     public $newImage;
     public $newTextureFile;
     public $newFilePathPod;
+    public $newTransformvideo;
 
     public $imageSize = array(100, 200, 1024);
 
@@ -66,6 +68,11 @@ class Robot extends CActiveRecord
             'onlyFileName' => $onlyFileName,
             'stripHashName' => $stripHashName,
         ));
+    }
+
+    public function getTransformvideo($onlyFileName = false)
+    {
+        return $this->getResourcePath($this->transformvideo, 0, array('onlyFileName' => $onlyFileName));
     }
 
 
@@ -119,6 +126,7 @@ class Robot extends CActiveRecord
             array('link_url', 'url'),
             array('file_path', 'file', 'allowEmpty' => false, 'types' => '3ds', 'on' => 'insert'),
             array('file_path_pod', 'file', 'allowEmpty' => false, 'types' => 'pod', 'on' => 'insert'),
+            array('transformvideo', 'file', 'allowEmpty' => true, 'types' => 'mp4,m4v', 'on' => 'insert'),
             array('image', 'file', 'allowEmpty' => false, 'types' => 'jpg,jpeg,gif,png', 'on' => 'insert'),
 //            array('texture_file', 'file', 'allowEmpty' => false, 'types' => 'jpg,jpeg,gif,png', 'on' => 'insert'),
 
@@ -168,6 +176,7 @@ class Robot extends CActiveRecord
             'sort' => 'Сортировка',
             'status' => 'Статус',
             'scale' => 'Масштаб',
+            'transformvideo' => 'Видео разбора робота',
         );
     }
 
@@ -216,6 +225,18 @@ class Robot extends CActiveRecord
             ));
             $this->setAttribute('file_path_pod', $fileName);
         }
+
+        $attribute = $this->isNewRecord ? 'transformvideo' : 'newTransformvideo';
+        $file = CUploadedFile::getInstance($this, $attribute);
+
+        if ($file !== null) {
+            $fileName = Common::processFile($this, $file, $hashString);
+            $this->updateByPk($this->id, array(
+                'transformvideo' => $fileName,
+            ));
+            $this->setAttribute('transformvideo', $fileName);
+        }
+
 
         $attribute = $this->isNewRecord ? 'texture_file' : 'newTextureFile';
         $files = CUploadedFile::getInstances($this, $attribute);

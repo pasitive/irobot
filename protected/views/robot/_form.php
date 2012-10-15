@@ -64,6 +64,12 @@
     <?php if ($model->isNewRecord) : ?>
 
     <div class="row">
+        <?php echo $form->labelEx($model, 'transformvideo'); ?>
+        <?php echo CHtml::activeFileField($model, 'transformvideo'); ?>
+        <?php echo $form->error($model, 'transformvideo'); ?>
+    </div>
+
+    <div class="row">
         <?php echo $form->labelEx($model, 'file_path'); ?>
         <?php echo CHtml::activeFileField($model, 'file_path'); ?>
         <?php echo $form->error($model, 'file_path'); ?>
@@ -94,11 +100,18 @@
     <?php else: ?>
 
     <div class="row">
+        <?php echo $form->labelEx($model, 'newTransformvideo'); ?>
+        <?php echo CHtml::activeFileField($model, 'newTransformvideo'); ?>
+        <?php echo $form->error($model, 'newTransformvideo'); ?>
+    </div>
+
+    <div class="row">
         <?php echo $form->labelEx($model, 'file_path'); ?>
         <?php if (!empty($model->file_path)): ?>
         <?php echo $model->getFilePath(); ?>
         <?php endif; ?>
     </div>
+
 
     <div class="row">
         <?php echo $form->labelEx($model, 'newFilePath'); ?>
