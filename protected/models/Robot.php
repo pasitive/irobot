@@ -72,6 +72,10 @@ class Robot extends CActiveRecord
 
     public function getTransformvideo($onlyFileName = false)
     {
+        if(empty($this->transformvideo)) {
+            return null;
+        }
+
         return $this->getResourcePath($this->transformvideo, 0, array('onlyFileName' => $onlyFileName));
     }
 
